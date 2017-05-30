@@ -3,20 +3,52 @@
 <head>
 	<title>Chat App- node and sockets</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+	<style type="text/css" media="screen">
+	#messages{
+		height:  50vh;
+		border: 1px solid black;
+		background-color: white;
+		border-radius: 15px 50px;
+	}
+	body{
+		background: url('http://files.cluster2.hgsitebuilder.com/hostgator4551/image/chat-20room-20logo.jpg');
+	}
+	 marquee{
+		text-align: center;
+		font-size: 100px;
+	}
+	h4{
+		font-size: 26px;
+		margin-left: -63px;
+		border: 2px solid black;
+	}
+	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
 </head>
 <body>
 
-<h1> Chat Room</h1>
+<marquee behavior="scroll" direction="left"<h1><strong>Welcome to the DigitalCrafts-Chat Room!</strong></h1></marquee>
 <div class="container">
 	<div class="row">
-		<div class="col-sm-12" id="users">
+		<div class="col-sm-3" id="users">
+			<h4>#BuildersofThings</h4>
 		<!-- users will go here -->
 		</div>
-		<div class="col-sm-12">
-			<button id="send-message" class="btn btn-primary">
-				Click to send message to server
-			</button>
+		<div  id= "messages" class="col-sm-6">
+
+		</div>
+		<div class="col-sm-12 text-center">
+			<form id="submit-message">
+				<input type="text" id="new-message"/>
+				<button type = "submit" id="send-message" class="btn btn-primary">
+				<!-- 	Click to send message to server -->
+					Send
+				</button>
+			</form>
+
 		</div>
 	</div>
 </div>
@@ -27,22 +59,33 @@
 	
 	console.log("Browser javascript");
 	var name =prompt("what is your name?");
-	console.dir(io)
-	//console.log(io)
+	// console.dir(io);
 	//console.log(window.io)
 	var socketio = io.connect('http://127.0.0.1:8080')// how the browser will remember the socket connection to the server
 	//send an event to the server
 	socketio.emit('nameToServer',name);
 
-	socketio.on('newUser',(userName)=>{
+	socketio.on('newUser',(userName)=>{// listening to the server for something.
 		console.log(userName + " just joined");// shows on the browser
 		var usersDiv = document.getElementById('users');
 		usersDiv.innerHTML += `<div class="col-sm-12">${userName}</div>`;
 	});
-
-	$('#send-message').click(function(){
-		socketio.emit("sendMessage");
+	$('#submit-message').submit(function(event){
+		event.preventDefault();
+		var newMessage = $('#new-message').val();
+		socketio.emit('messageToServer',{
+			newMessage:newMessage,
+			name:name
+		});
+		socketio.on('messageToClient',(message)=>{
+		$('#messages').append('<p>' + message + '</p>');
 	})
+	});
+	
+
+	// $('#send-message').click(function(){
+	// 	socketio.emit("sendMessage");
+	// })
 
 </script>
 </body>

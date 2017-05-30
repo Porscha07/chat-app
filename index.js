@@ -22,7 +22,7 @@ var server = http.createServer((req, res)=>{
 
 var io = socketio.listen(server);
 //handle socket connections..
-io.sockets.on('connect',(socket)=>{;
+io.sockets.on('connect',(socket)=>{
 	console.log("someone connected via socket!");
 	//console.log(socket);
 
@@ -32,6 +32,10 @@ io.sockets.on('connect',(socket)=>{;
 	});
 	socket.on('sendMessage',()=>{
 		console.log('Someone clicked on the big blue button.');
+	});
+	socket.on('messageToServer',(messageObj)=>{// basis for entire chat app
+		console.log(messageObj);
+		io.sockets.emit('messageToClient',messageObj.newMessage + '__' + messageObj.name);
 	});
 });
 
