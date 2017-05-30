@@ -2,9 +2,48 @@
 <html>
 <head>
 	<title>Chat App- node and sockets</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
 
-<h1> Did this load</h1>
+<h1> Chat Room</h1>
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12" id="users">
+		<!-- users will go here -->
+		</div>
+		<div class="col-sm-12">
+			<button id="send-message" class="btn btn-primary">
+				Click to send message to server
+			</button>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+
+<script type="text/javascript">
+	
+	console.log("Browser javascript");
+	var name =prompt("what is your name?");
+	console.dir(io)
+	//console.log(io)
+	//console.log(window.io)
+	var socketio = io.connect('http://127.0.0.1:8080')// how the browser will remember the socket connection to the server
+	//send an event to the server
+	socketio.emit('nameToServer',name);
+
+	socketio.on('newUser',(userName)=>{
+		console.log(userName + " just joined");// shows on the browser
+		var usersDiv = document.getElementById('users');
+		usersDiv.innerHTML += `<div class="col-sm-12">${userName}</div>`;
+	});
+
+	$('#send-message').click(function(){
+		socketio.emit("sendMessage");
+	})
+
+</script>
 </body>
 </html>
